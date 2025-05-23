@@ -7,6 +7,10 @@ import Employee from "./employee.entity";
 
 @Entity()
 class Department extends AbstractEntity {
+  constructor(dept_name?:string){
+    super()
+    if(dept_name) this.name = dept_name
+  }
 
   @Column({unique: true})
   name: string;
