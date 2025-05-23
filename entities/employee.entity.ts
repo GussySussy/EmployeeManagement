@@ -38,7 +38,7 @@ class Employee extends AbstractEntity {
   age: number;
 
   @Column({
-    type: 'enum',
+    type: "enum",
     enum: EmployeeRole,
     default: EmployeeRole.DEVELOPER,
   })
@@ -50,8 +50,12 @@ class Employee extends AbstractEntity {
   @Column()
   password: string;
 
-  @ManyToOne(()=> Department, (department) => department.employees )
-  department
+  @ManyToOne(() => Department, (department) => department.employees, {
+    cascade: true,
+    onDelete: "CASCADE",
+  })
+  @JoinColumn()
+  department: Department;
 }
 
 export default Employee;

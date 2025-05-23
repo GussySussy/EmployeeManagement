@@ -1,0 +1,83 @@
+import { NextFunction, Request, Response, Router } from "express";
+import EmployeeService from "../services/employee.service";
+import HttpException from "../exception/httpException";
+import { isEmail } from "../validators/emailValidator";
+import { plainToInstance } from "class-transformer";
+import { validate } from "class-validator";
+import { UpdateEmployeeDto } from "../dto/update-employee.dto";
+import authorizationMiddleware from "../middlewares/authorization.middleware";
+import { EmployeeRole } from "../entities/employee.entity";
+import { CreateDepartmentDto } from "../dto/create-department.dto";
+import DepartmentService from "../services/department.services";
+import { UpdateDepartmentDto } from "../dto/update-department.dto";
+
+class DepartmentController {
+  constructor(private departmentService: DepartmentService, router: Router) {
+    router.put("/:id",authorizationMiddleware(EmployeeRole.HR), this.updateEmployeeById.bind(this));
+    router.get("/:id", this.getEmployeeById.bind(this));
+    router.get("/", this.getAllEmployees.bind(this));
+    router.post("/",authorizationMiddleware(EmployeeRole.HR), this.createDepartment.bind(this));
+    router.delete("/:id", authorizationMiddleware(EmployeeRole.HR), this.deleteEmployee.bind(this));
+  }
+
+  public async createDepartment(req: Request, res: Response, next) {
+    try {
+      console.log(req.user)
+      const createDepartmentDto = plainToInstance(CreateDepartmentDto, req.body);
+      const errors = await validate(createDepartmentDto);
+      if (errors.length > 0) {
+        console.log(JSON.stringify(errors));
+        throw new HttpException(400, JSON.stringify(errors));
+      }
+      const savedDepartment = await this.departmentService.createDepartment(
+        createDepartmentDto.name,
+      );
+      res.status(201).send(savedDepartment);
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  async getAllDepartments(req: Request, res: Response) {
+    console.log(req.user)
+    const employees = await this.departmentService.getAllDepartments();
+    res.status(200).send(employees);
+  }
+
+  async getDepartmentById(req: Request, res: Response, next: NextFunction) {
+    try {
+      const id = Number(req.params["id"]);
+      const employee = await this.departmentService.getDepartmentById(id);
+      if (!employee) {
+        throw new HttpException(404, `Department with id : ${id} not found`);
+      }
+      res.status(200).send(employee);
+    } catch (err) {
+      console.log(err);
+      next(err);
+    }
+  }
+
+  async updateDepartmentById(req: Request, res: Response) {
+    const id = Number(req.params.id);
+    const updateDepartmentDto = plainToInstance(UpdateDepartmentDto, req.body);
+    const errors = await validate(updateDepartmentDto);
+    if (errors.length > 0) {
+      console.log(JSON.stringify(errors));
+      throw new HttpException(400, JSON.stringify(errors));
+    }
+      const savedDepartment = await this.departmentService.updateDepartment(
+        id,
+        updateDepartmentDto,
+      );
+    res.status(200).send("Entry Updated Successfully.");
+  }
+
+  async deleteDepartment(req: Request, res: Response) {
+    const id = Number(req.params["id"]);
+    await this.departmentService.deleteDepartment(id);
+    res.status(200).send("Row Deleted Successfully");
+  }
+}
+
+export default DepartmentController;
