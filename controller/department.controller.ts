@@ -10,28 +10,44 @@ import { EmployeeRole } from "../entities/employee.entity";
 import { CreateDepartmentDto } from "../dto/create-department.dto";
 import DepartmentService from "../services/department.services";
 import { UpdateDepartmentDto } from "../dto/update-department.dto";
+import { logger } from "../app";
 
 class DepartmentController {
   constructor(private departmentService: DepartmentService, router: Router) {
-    router.put("/:id",authorizationMiddleware(EmployeeRole.HR), this.updateDepartmentById.bind(this));
+    router.put(
+      "/:id",
+      authorizationMiddleware([EmployeeRole.HR]),
+      this.updateDepartmentById.bind(this)
+    );
     router.get("/:id", this.getDepartmentById.bind(this));
     router.get("/", this.getAllDepartments.bind(this));
-    router.post("/",authorizationMiddleware(EmployeeRole.HR), this.createDepartment.bind(this));
-    router.delete("/:id", authorizationMiddleware(EmployeeRole.HR), this.deleteDepartment.bind(this));
+    router.post(
+      "/",
+      authorizationMiddleware([EmployeeRole.HR]),
+      this.createDepartment.bind(this)
+    );
+    router.delete(
+      "/:id",
+      authorizationMiddleware([EmployeeRole.HR]),
+      this.deleteDepartment.bind(this)
+    );
   }
 
   public async createDepartment(req: Request, res: Response, next) {
     try {
-      console.log(req.user)
-      const createDepartmentDto = plainToInstance(CreateDepartmentDto, req.body);
+      const createDepartmentDto = plainToInstance(
+        CreateDepartmentDto,
+        req.body
+      );
       const errors = await validate(createDepartmentDto);
       if (errors.length > 0) {
         console.log(JSON.stringify(errors));
         throw new HttpException(400, JSON.stringify(errors));
       }
       const savedDepartment = await this.departmentService.createDepartment(
-        createDepartmentDto.name,
+        createDepartmentDto.name
       );
+      logger.info(`Created department successfully`)
       res.status(201).send(savedDepartment);
     } catch (error) {
       next(error);
@@ -39,44 +55,65 @@ class DepartmentController {
   }
 
   async getAllDepartments(req: Request, res: Response) {
-    console.log(req.user)
     const employees = await this.departmentService.getAllDepartments();
+    logger.info(`Fetched all departments details`)
     res.status(200).send(employees);
   }
 
   async getDepartmentById(req: Request, res: Response, next: NextFunction) {
     try {
       const id = Number(req.params["id"]);
-      const employee = await this.departmentService.getDepartmentById(id);
-      if (!employee) {
+      const department = await this.departmentService.getDepartmentById(id);
+      if (!department) {
         throw new HttpException(404, `Department with id : ${id} not found`);
       }
-      res.status(200).send(employee);
+      logger.info(`Fetched department with id : ${id}`)
+      res.status(200).send(department);
     } catch (err) {
-      console.log(err);
       next(err);
     }
   }
 
-  async updateDepartmentById(req: Request, res: Response) {
-    const id = Number(req.params.id);
-    const updateDepartmentDto = plainToInstance(UpdateDepartmentDto, req.body);
-    const errors = await validate(updateDepartmentDto);
-    if (errors.length > 0) {
-      console.log(JSON.stringify(errors));
-      throw new HttpException(400, JSON.stringify(errors));
-    }
+  async updateDepartmentById(req: Request, res: Response, next: NextFunction) {
+    try {
+      const id = Number(req.params.id);
+      const updateDepartmentDto = plainToInstance(
+        UpdateDepartmentDto,
+        req.body
+      );
+      const errors = await validate(updateDepartmentDto);
+      if (errors.length > 0) {
+        console.log(JSON.stringify(errors));
+        throw new HttpException(400, JSON.stringify(errors));
+      }
       const savedDepartment = await this.departmentService.updateDepartment(
         id,
-        updateDepartmentDto,
+        updateDepartmentDto
       );
-    res.status(200).send("Entry Updated Successfully.");
+      if (!savedDepartment) {
+        throw new HttpException(404, `Department with id : ${id} not found`);
+      }
+      logger.info(`Updated department with id : ${id}`)
+      res
+        .status(200)
+        .send("Entry Updated Successfully as : " + savedDepartment.name);
+    } catch (e) {
+      next(e);
+    }
   }
 
-  async deleteDepartment(req: Request, res: Response) {
-    const id = Number(req.params["id"]);
-    await this.departmentService.deleteDepartment(id);
-    res.status(200).send("Row Deleted Successfully");
+  async deleteDepartment(req: Request, res: Response, next: NextFunction) {
+    try {
+      const id = Number(req.params["id"]);
+      const department = await this.departmentService.deleteDepartment(id);
+      if (!department) {
+        throw new HttpException(404, `Department with id : ${id} not found`);
+      }
+      logger.info(`Deleted departments with id : ${id}`)
+      res.status(200).send("Department Deleted Successfully");
+    } catch (e) {
+      next(e);
+    }
   }
 }
 

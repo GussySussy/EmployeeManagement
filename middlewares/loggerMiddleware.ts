@@ -1,6 +1,4 @@
-import { LoggerService } from "../services/logger.service";
-
-const logger = LoggerService.getInstance("app()");
+import { logger } from "../app";
 
 const loggerMiddleware = (req, res, next) => {
   res.on("finish", () => {

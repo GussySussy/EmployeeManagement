@@ -1,7 +1,7 @@
 import { MigrationInterface, QueryRunner } from "typeorm";
 
-export class AddingPasswordRoleToEmployeeAndCreationOfDepartment1747977035877 implements MigrationInterface {
-    name = 'AddingPasswordRoleToEmployeeAndCreationOfDepartment1747977035877'
+export class RemovedJoinColumnForEmployeeDepartmentAndAddedCascade1747978550752 implements MigrationInterface {
+    name = 'RemovedJoinColumnForEmployeeDepartmentAndAddedCascade1747978550752'
 
     public async up(queryRunner: QueryRunner): Promise<void> {
         await queryRunner.query(`ALTER TABLE "employee" DROP CONSTRAINT "FK_2a4f5082f1be346e2b8cdec2194"`);

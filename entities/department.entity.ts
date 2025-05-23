@@ -15,7 +15,7 @@ class Department extends AbstractEntity {
   @Column({unique: true})
   name: string;
 
-  @OneToMany(() => Employee, (employee)=>employee.department)
+  @OneToMany(() => Employee, (employee)=>employee.department, {cascade: true})
   employees: Employee[]
 }
 

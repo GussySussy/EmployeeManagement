@@ -18,7 +18,8 @@ class Employee extends AbstractEntity {
     name?: string,
     age?: number,
     password?: string,
-    address?: Address
+    address?: Address,
+    department?: Department
   ) {
     super();
     if (email) this.email = email;
@@ -26,6 +27,7 @@ class Employee extends AbstractEntity {
     if (age) this.age = age;
     if (password) this.password = password;
     this.address = address || new Address();
+    if (department) this.department = department;
   }
 
   @Column({ unique: true })
@@ -44,17 +46,13 @@ class Employee extends AbstractEntity {
   })
   role: EmployeeRole;
 
-  @OneToOne(() => Address, (address) => address.employee,{cascade: true})
+  @OneToOne(() => Address, (address) => address.employee)
   address: Address;
 
   @Column()
   password: string;
 
-  @ManyToOne(() => Department, (department) => department.employees, {
-    cascade: true,
-    onDelete: "CASCADE",
-  })
-  @JoinColumn()
+  @ManyToOne(() => Department, (department) => department.employees)
   department: Department;
 }
 

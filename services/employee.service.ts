@@ -5,10 +5,16 @@ import Employee, { EmployeeRole } from "../entities/employee.entity";
 import EmployeeRepository from "../repositories/employee.repository";
 import bcrypt from "bcrypt";
 import { LoggerService } from "./logger.service";
+import { CreateDepartmentDto } from "../dto/create-department.dto";
+import DepartmentRepository from "../repositories/department.repository";
+import HttpException from "../exception/httpException";
 
 class EmployeeService {
   private logger = LoggerService.getInstance("app()");
-  constructor(private employeeRepository: EmployeeRepository) {}
+  constructor(
+    private employeeRepository: EmployeeRepository,
+    private departmentRepository: DepartmentRepository
+  ) {}
 
   async createEmployee(
     email: string,
@@ -16,13 +22,24 @@ class EmployeeService {
     age: number,
     password: string,
     role: EmployeeRole,
-    address: CreateAddressDto
+    address: CreateAddressDto,
+    department_id: number
   ): Promise<Employee> {
     const newEmployee = new Employee(email, name, age);
     newEmployee.password = await bcrypt.hash(password, 10);
     newEmployee.role = role;
     newEmployee.address.line1 = address.line1;
     newEmployee.address.pincode = address.pincode;
+    const department = await this.departmentRepository.findOneById(
+      department_id
+    );
+    if (!department) {
+      throw new HttpException(
+        400,
+        "A department does not exist with the given department id"
+      );
+    }
+    newEmployee.department = department;
     return this.employeeRepository.create(newEmployee);
   }
 
@@ -38,19 +55,27 @@ class EmployeeService {
     return this.employeeRepository.findOneByEmail(email);
   }
 
-  async updateEmployee(id: number, employeeUpdate: UpdateEmployeeDto) {
+  async updateEmployee(id: number, employeeUpdate: UpdateEmployeeDto) { 
     const existingEmployee = await this.employeeRepository.findOneById(id);
     if (existingEmployee) {
-      const employee = new Employee();
-      employee.name = employeeUpdate.name || existingEmployee.name;
-      employee.email = employeeUpdate.email || existingEmployee.email;
-      employee.age = employeeUpdate.age || existingEmployee.age;
-      employee.address.line1 =
-        employeeUpdate.address.line1 || existingEmployee.address.line1;
-      employee.address.pincode =
-        employeeUpdate.address.pincode || existingEmployee.address.pincode;
-      await this.employeeRepository.update(id, employee);
-      //   return this.employeeRepository.findOneById(id)
+      existingEmployee.name = employeeUpdate.name || existingEmployee.name;
+      existingEmployee.email = employeeUpdate.email || existingEmployee.email;
+      existingEmployee.age = employeeUpdate.age || existingEmployee.age;
+      existingEmployee.address.line1 =
+        employeeUpdate.address?.line1 || existingEmployee.address.line1;
+      existingEmployee.address.pincode =
+        employeeUpdate.address?.pincode || existingEmployee.address.pincode;
+      const department = await this.departmentRepository.findOneById(
+        employeeUpdate.department
+      );
+      if (!department) {
+        throw new Error(
+          "A department does not exist with the given department id"
+        );
+      }
+      existingEmployee.department = department || existingEmployee.department;
+      await this.employeeRepository.update(id, existingEmployee);
+      return existingEmployee
     }
   }
 
@@ -59,7 +84,7 @@ class EmployeeService {
     if (existingEmployee) {
       await this.employeeRepository.remove(existingEmployee);
     }
-    // await this.employeeRepository.delete(id);
+    return existingEmployee;
   }
 }
 

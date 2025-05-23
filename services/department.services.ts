@@ -27,8 +27,8 @@ class DepartmentService {
       const department = new Department();
       department.name = updateDepartmentDto.name;
       await this.departmentRepository.update(id, department);
-      return this.departmentRepository.findOneById(id);
     }
+    return this.departmentRepository.findOneById(id);
   }
 
   async deleteDepartment(id: number) {
@@ -36,6 +36,7 @@ class DepartmentService {
     if (existingDepartment) {
       await this.departmentRepository.remove(existingDepartment);
     }
+    return existingDepartment
   }
 }
 

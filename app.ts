@@ -11,7 +11,7 @@ import departmentRouter from "./routes/department.routes";
 const { Client } = require("pg");
 
 const server = express();
-const logger = LoggerService.getInstance("app()");
+export const logger = LoggerService.getInstance("app()");
 server.use(express.json());
 server.use(loggerMiddleware);
 

@@ -10,14 +10,20 @@ import EmployeeService from "../../services/employee.service";
 import { MockProxy, mock } from "jest-mock-extended";
 import { when } from "jest-when";
 import Address from "../../entities/address.entity";
+import DepartmentRepository from "../../repositories/department.repository";
 
 describe("EmployeeService", () => {
   let employeeRepository: MockProxy<EmployeeRepository>;
+  let departmentRepository: MockProxy<DepartmentRepository>;
   let employeeService: EmployeeService;
 
   beforeEach(() => {
     employeeRepository = mock<EmployeeRepository>();
-    employeeService = new EmployeeService(employeeRepository);
+    departmentRepository = mock<DepartmentRepository>();
+    employeeService = new EmployeeService(
+      employeeRepository,
+      departmentRepository
+    );
   });
 
   describe("getEmployeeById", () => {
@@ -38,6 +44,17 @@ describe("EmployeeService", () => {
       const result = await employeeService.getEmployeeById(6);
       expect(employeeRepository.findOneById).toHaveBeenCalledWith(6);
       expect(result).toStrictEqual(mockEmployee);
+    });
+
+    it("should throw error when user with provided  id does not exist", async () => {
+      //Arrange
+      when(employeeRepository.findOneById).calledWith(1).mockReturnValue(null);
+      //Act
+      expect(employeeService.getEmployeeById(2)).rejects.toThrow(
+        "Employee not found"
+      );
+      //Assert
+      expect(employeeRepository.findOneById).toHaveBeenCalledWith(2);
     });
   });
 });
