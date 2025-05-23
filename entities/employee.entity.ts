@@ -44,7 +44,7 @@ class Employee extends AbstractEntity {
   })
   role: EmployeeRole;
 
-  @OneToOne(() => Address, (address) => address.employee)
+  @OneToOne(() => Address, (address) => address.employee,{cascade: true})
   address: Address;
 
   @Column()
