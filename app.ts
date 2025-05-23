@@ -6,6 +6,7 @@ import { errorMiddleware } from "./middlewares/errorMiddleware";
 import authRouter from "./routes/auth.routes";
 import authMiddleware from "./middlewares/auth.middleware";
 import { LoggerService } from "./services/logger.service";
+import departmentRouter from "./routes/department.routes";
 
 const { Client } = require("pg");
 
@@ -15,6 +16,7 @@ server.use(express.json());
 server.use(loggerMiddleware);
 
 server.use("/employee", authMiddleware, employeeRouter);
+server.use("/department", authMiddleware, departmentRouter);
 server.use("/auth", authRouter);
 server.use(errorMiddleware);
 
@@ -30,7 +32,7 @@ server.get("/", (req, res) => {
     server.listen(3000, () => {
       logger.info("server running on http://localhost:3000");
     });
-  } catch(e) {
+  } catch (e) {
     logger.error(`Failed to connect to db -${e}`);
     process.exit(1);
   }

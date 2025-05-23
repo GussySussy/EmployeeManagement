@@ -13,11 +13,11 @@ import { UpdateDepartmentDto } from "../dto/update-department.dto";
 
 class DepartmentController {
   constructor(private departmentService: DepartmentService, router: Router) {
-    router.put("/:id",authorizationMiddleware(EmployeeRole.HR), this.updateEmployeeById.bind(this));
-    router.get("/:id", this.getEmployeeById.bind(this));
-    router.get("/", this.getAllEmployees.bind(this));
+    router.put("/:id",authorizationMiddleware(EmployeeRole.HR), this.updateDepartmentById.bind(this));
+    router.get("/:id", this.getDepartmentById.bind(this));
+    router.get("/", this.getAllDepartments.bind(this));
     router.post("/",authorizationMiddleware(EmployeeRole.HR), this.createDepartment.bind(this));
-    router.delete("/:id", authorizationMiddleware(EmployeeRole.HR), this.deleteEmployee.bind(this));
+    router.delete("/:id", authorizationMiddleware(EmployeeRole.HR), this.deleteDepartment.bind(this));
   }
 
   public async createDepartment(req: Request, res: Response, next) {
