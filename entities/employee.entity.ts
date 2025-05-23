@@ -2,7 +2,7 @@ import { Column, Entity, JoinColumn, ManyToOne, OneToOne } from "typeorm";
 import AbstractEntity from "./abstract.entity";
 import Address from "./address.entity";
 import { CreateAddressDto } from "../dto/create-address.dto";
-// import Department from "./department.entity";
+import Department from "./department.entity";
 
 export enum EmployeeRole {
   UI = "UI",
@@ -50,8 +50,8 @@ class Employee extends AbstractEntity {
   @Column()
   password: string;
 
-  // @ManyToOne(()=> Department, (department) => department.employees )
-  // department
+  @ManyToOne(()=> Department, (department) => department.employees )
+  department
 }
 
 export default Employee;
