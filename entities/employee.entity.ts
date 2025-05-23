@@ -11,6 +11,12 @@ export enum EmployeeRole {
   HR = "HR",
 }
 
+export enum Status {
+  ACTIVE = "ACTIVE",
+  INACTIVE = "INACTIVE",
+  PROBATION = "PROBATION",
+}
+
 @Entity()
 class Employee extends AbstractEntity {
   constructor(
@@ -35,6 +41,22 @@ class Employee extends AbstractEntity {
 
   @Column()
   name: string;
+
+  @Column()
+  employeeId:string;
+
+  @Column()
+  dateOfJoining: Date;
+
+  @Column({
+    type: "enum",
+    enum: Status,
+    default: Status.ACTIVE,
+  })
+  status: Status;
+
+  @Column()
+  experience: number;
 
   @Column()
   age: number;

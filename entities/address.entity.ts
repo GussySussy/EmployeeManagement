@@ -22,6 +22,11 @@ class Address extends AbstractEntity {
   @Column()
   line1: string;
 
+  @Column()
+  houseNo: string
+
+  @Column()
+  line2: string
 }
 
 export default Address;
