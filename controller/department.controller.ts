@@ -47,7 +47,7 @@ class DepartmentController {
       const savedDepartment = await this.departmentService.createDepartment(
         createDepartmentDto.name
       );
-      logger.info(`Created department successfully`)
+      logger.info(`Created department successfully`);
       res.status(201).send(savedDepartment);
     } catch (error) {
       next(error);
@@ -56,7 +56,7 @@ class DepartmentController {
 
   async getAllDepartments(req: Request, res: Response) {
     const employees = await this.departmentService.getAllDepartments();
-    logger.info(`Fetched all departments details`)
+    logger.info(`Fetched all departments details`);
     res.status(200).send(employees);
   }
 
@@ -67,7 +67,7 @@ class DepartmentController {
       if (!department) {
         throw new HttpException(404, `Department with id : ${id} not found`);
       }
-      logger.info(`Fetched department with id : ${id}`)
+      logger.info(`Fetched department with id : ${id}`);
       res.status(200).send(department);
     } catch (err) {
       next(err);
@@ -93,7 +93,7 @@ class DepartmentController {
       if (!savedDepartment) {
         throw new HttpException(404, `Department with id : ${id} not found`);
       }
-      logger.info(`Updated department with id : ${id}`)
+      logger.info(`Updated department with id : ${id}`);
       res
         .status(200)
         .send("Entry Updated Successfully as : " + savedDepartment.name);
@@ -109,9 +109,10 @@ class DepartmentController {
       if (!department) {
         throw new HttpException(404, `Department with id : ${id} not found`);
       }
-      logger.info(`Deleted departments with id : ${id}`)
+      logger.info(`Deleted departments with id : ${id}`);
       res.status(200).send("Department Deleted Successfully");
     } catch (e) {
+      logger.warn("Cannot delete department with existing employees");
       next(e);
     }
   }

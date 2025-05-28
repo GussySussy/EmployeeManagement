@@ -21,7 +21,7 @@ class EmployeeController {
     router.get("/", this.getAllEmployees.bind(this));
     router.post(
       "/",
-      authorizationMiddleware([EmployeeRole.HR]),
+      // authorizationMiddleware([EmployeeRole.HR]),
       this.createEmployee.bind(this)
     );
     router.delete(
@@ -46,6 +46,10 @@ class EmployeeController {
         createEmployeeDto.age,
         createEmployeeDto.password,
         createEmployeeDto.role,
+        createEmployeeDto.experience,
+        createEmployeeDto.dateOfJoining,
+        createEmployeeDto.employeeId,
+        createEmployeeDto.status,
         createEmployeeDto.address,
         createEmployeeDto.department
       );

@@ -3,6 +3,8 @@ import AbstractEntity from "./abstract.entity";
 import Address from "./address.entity";
 import { CreateAddressDto } from "../dto/create-address.dto";
 import Department from "./department.entity";
+import { UUID } from "typeorm/driver/mongodb/bson.typings";
+import { randomUUID } from "crypto";
 
 export enum EmployeeRole {
   UI = "UI",
@@ -25,7 +27,7 @@ class Employee extends AbstractEntity {
     age?: number,
     password?: string,
     address?: Address,
-    department?: Department
+    department?: Department,
   ) {
     super();
     if (email) this.email = email;
@@ -42,8 +44,8 @@ class Employee extends AbstractEntity {
   @Column()
   name: string;
 
-  @Column()
-  employeeId:string;
+  @Column({ unique: true })
+  employeeId: string;
 
   @Column()
   dateOfJoining: Date;
@@ -51,7 +53,7 @@ class Employee extends AbstractEntity {
   @Column({
     type: "enum",
     enum: Status,
-    default: Status.ACTIVE,
+    default: Status.INACTIVE,
   })
   status: Status;
 
@@ -68,7 +70,7 @@ class Employee extends AbstractEntity {
   })
   role: EmployeeRole;
 
-  @OneToOne(() => Address, (address) => address.employee)
+  @OneToOne(() => Address, (address) => address.employee, { cascade: true })
   address: Address;
 
   @Column()

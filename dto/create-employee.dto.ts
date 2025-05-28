@@ -1,4 +1,6 @@
 import {
+  IsDate,
+  IsDateString,
   IsEmail,
   IsEnum,
   IsNotEmpty,
@@ -9,10 +11,26 @@ import {
 } from "class-validator";
 import { CreateAddressDto } from "./create-address.dto";
 import { Type } from "class-transformer";
-import { EmployeeRole } from "../entities/employee.entity";
+import { EmployeeRole, Status } from "../entities/employee.entity";
 import { CreateDepartmentDto } from "./create-department.dto";
 
 export class CreateEmployeeDto {
+  @IsNotEmpty()
+  @IsString()
+  employeeId: string;
+
+  @IsNotEmpty()
+  @IsNumber()
+  experience: number;
+
+  @IsNotEmpty()
+  @IsDateString()
+  dateOfJoining: Date;
+
+  @IsNotEmpty()
+  @IsEnum(Status)
+  status: Status;
+
   @IsNotEmpty()
   @IsEmail()
   email: string;
@@ -34,7 +52,7 @@ export class CreateEmployeeDto {
   role: EmployeeRole;
 
   @IsNumber()
-  department: number
+  department: number;
 
   @ValidateNested()
   @Type(() => CreateAddressDto)

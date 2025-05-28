@@ -7,6 +7,7 @@ import authRouter from "./routes/auth.routes";
 import authMiddleware from "./middlewares/auth.middleware";
 import { LoggerService } from "./services/logger.service";
 import departmentRouter from "./routes/department.routes";
+import { randomUUID } from "crypto";
 
 const { Client } = require("pg");
 

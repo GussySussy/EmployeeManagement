@@ -1,5 +1,12 @@
-import { IsEmail, IsNotEmpty, IsNumber, IsString, ValidateNested } from "class-validator";
-import { Type } from "class-transformer" ;
+import {
+  IsEmail,
+  IsNotEmpty,
+  IsNumber,
+  IsOptional,
+  IsString,
+  ValidateNested,
+} from "class-validator";
+import { Type } from "class-transformer";
 
 export class CreateAddressDto {
   @IsNotEmpty()
@@ -9,4 +16,12 @@ export class CreateAddressDto {
   @IsNotEmpty()
   @IsString()
   line1: string;
+
+  @IsNotEmpty()
+  @IsString()
+  houseNo: string;
+
+  @IsNotEmpty()
+  @IsString()
+  line2: string;
 }

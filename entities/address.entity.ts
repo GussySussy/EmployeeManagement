@@ -10,7 +10,6 @@ class Address extends AbstractEntity {
   //   @Column()
   //   city: string;
   @OneToOne(() => Employee, (employee) => employee.address,{
-    cascade:true,
     onDelete: "CASCADE"
   })
   @JoinColumn()

@@ -1,9 +1,3 @@
-import {
-  AirbagService,
-  CrashSensor,
-  AirbagIgniter,
-  AirbagResult,
-} from "../../services/airbag.service";
 import Employee, { EmployeeRole } from "../../entities/employee.entity";
 import EmployeeRepository from "../../repositories/employee.repository";
 import EmployeeService from "../../services/employee.service";

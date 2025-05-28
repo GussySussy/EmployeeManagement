@@ -10,7 +10,6 @@ export class AuthController {
   async login(req: Request, res: Response, next: NextFunction) {
     try {
       const { email, password } = req.body;
-      console.log(email, password, req.body);
       if (!email || !password) {
         throw new HttpException(400, "Email or Password missing");
       }
