@@ -31,7 +31,7 @@ class EmployeeController {
     );
   }
 
-  public async createEmployee(req: Request, res: Response, next:NextFunction) {
+  public async createEmployee(req: Request, res: Response, next: NextFunction) {
     try {
       console.log(req.user);
       const createEmployeeDto = plainToInstance(CreateEmployeeDto, req.body);
@@ -53,7 +53,7 @@ class EmployeeController {
         createEmployeeDto.address,
         createEmployeeDto.department
       );
-      logger.info(`New Employee Created : ` + JSON.stringify(savedEmployee))
+      logger.info(`New Employee Created : ` + JSON.stringify(savedEmployee));
       res.status(201).send(savedEmployee);
     } catch (error) {
       next(error);
@@ -62,8 +62,9 @@ class EmployeeController {
 
   async getAllEmployees(req: Request, res: Response) {
     console.log(req.user);
+    // console.log("was in employee controller");
     const employees = await this.employeeService.getAllEmployees();
-    logger.info(`Fetched all Employees Details`)
+    logger.info(`Fetched all Employees Details`);
     res.status(200).send(employees);
   }
 
@@ -74,7 +75,8 @@ class EmployeeController {
       if (!employee) {
         throw new HttpException(404, `Employee with id : ${id} not found`);
       }
-      logger.info(`Fetched employee with the id : ${id}`)
+      console.log(employee);
+      logger.info(`Fetched employee with the id : ${id}`);
       res.status(200).send(employee);
     } catch (err) {
       next(err);
@@ -97,25 +99,21 @@ class EmployeeController {
       if (!savedEmployee) {
         throw new HttpException(404, `Employee with id : ${id} not found`);
       }
-      logger.info(`Updated employee with the id : ${id}`)
-      res
-        .status(200)
-        .send(
-          "Entry Updated Successfully as : " + JSON.stringify(savedEmployee)
-        );
+      logger.info(`Updated employee with the id : ${id}`);
+      res.status(200).send(savedEmployee);
     } catch (e) {
       next(e);
     }
   }
 
-  async deleteEmployee(req: Request, res: Response,next:NextFunction) {
+  async deleteEmployee(req: Request, res: Response, next: NextFunction) {
     try {
       const id = Number(req.params["id"]);
       const employee = await this.employeeService.deleteEmployee(id);
       if (!employee) {
         throw new HttpException(404, `Employee with id : ${id} not found`);
       }
-      logger.info(`Deleted employee with the id : ${id}`)
+      logger.info(`Deleted employee with the id : ${id}`);
       res.status(200).send("Employee Deleted Successfully");
     } catch (e) {
       next(e);

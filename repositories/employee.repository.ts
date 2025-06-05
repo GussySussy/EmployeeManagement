@@ -22,6 +22,7 @@ class EmployeeRepository {
       where: { id },
       relations: {
         address: true,
+        department: true,
       },
     });
   }

@@ -76,7 +76,7 @@ class Employee extends AbstractEntity {
   @Column()
   password: string;
 
-  @ManyToOne(() => Department, (department) => department.employees)
+  @ManyToOne(() => Department, (department) => department.employees, )
   department: Department;
 }
 

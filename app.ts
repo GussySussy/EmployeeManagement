@@ -8,6 +8,7 @@ import authMiddleware from "./middlewares/auth.middleware";
 import { LoggerService } from "./services/logger.service";
 import departmentRouter from "./routes/department.routes";
 import { randomUUID } from "crypto";
+import cors from "cors";
 
 const { Client } = require("pg");
 
@@ -15,9 +16,18 @@ const server = express();
 export const logger = LoggerService.getInstance("app()");
 server.use(express.json());
 server.use(loggerMiddleware);
+server.use(cors());
 
-server.use("/employee", authMiddleware, employeeRouter);
-server.use("/department", authMiddleware, departmentRouter);
+server.use(
+  "/employee",
+  authMiddleware,
+  employeeRouter
+);
+server.use(
+  "/department",
+   authMiddleware,
+  departmentRouter
+);
 server.use("/auth", authRouter);
 server.use(errorMiddleware);
 

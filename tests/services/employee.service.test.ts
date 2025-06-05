@@ -1,10 +1,12 @@
 import Employee, { EmployeeRole } from "../../entities/employee.entity";
 import EmployeeRepository from "../../repositories/employee.repository";
 import EmployeeService from "../../services/employee.service";
-import { MockProxy, mock } from "jest-mock-extended";
+import { MockProxy, anyNumber, mock } from "jest-mock-extended";
 import { when } from "jest-when";
 import Address from "../../entities/address.entity";
 import DepartmentRepository from "../../repositories/department.repository";
+import { UpdateEmployeeDto } from "../../dto/update-employee.dto";
+import HttpException from "../../exception/httpException";
 
 describe("EmployeeService", () => {
   let employeeRepository: MockProxy<EmployeeRepository>;
@@ -49,6 +51,82 @@ describe("EmployeeService", () => {
       );
       //Assert
       expect(employeeRepository.findOneById).toHaveBeenCalledWith(2);
+    });
+  });
+
+  describe("getAllEmployees", () => {
+    it("should return employee list", async () => {
+      const mockList = [{ id: 1 }, { id: 2 }] as Employee[];
+      when(employeeRepository.findMany).mockReturnValue(mockList);
+
+      const result = await employeeService.getAllEmployees();
+      expect(result).toHaveLength(2);
+      expect(result).toEqual(mockList);
+    });
+    it("should not return employee list", async () => {
+      when(employeeRepository.findMany).mockResolvedValue(null);
+      const result = await employeeService.getAllEmployees();
+      expect(result).toBeNull;
+    });
+  });
+
+  describe("updateEmployeeById", () => {
+
+
+    it("test for updating employee", async () => {
+      const mockUpdateEmployeeDto = {
+        name: "New Name",
+      } as UpdateEmployeeDto;
+      const mockEmployeeBeforeUpdate = {
+        id: 10,
+        name: "Name",
+      } as Employee;
+      const mockEmployeeAfterUpdate = {
+        id: 10,
+        name: "New Name",
+      } as Employee;
+      when(employeeRepository.findOneById)
+        .calledWith(10)
+        .mockReturnValue(mockEmployeeBeforeUpdate);
+      when(employeeRepository.update)
+        .calledWith(10, mockEmployeeAfterUpdate)
+        .mockReturnValue(mockEmployeeAfterUpdate);
+      const result = await employeeService.updateEmployee(
+        10,
+        mockUpdateEmployeeDto
+      );
+      console.log(result);
+      expect(result).toStrictEqual(mockEmployeeAfterUpdate);
+    });
+
+
+    it("test for wrong emp id", async () => {
+      const mockUpdateEmployeeDto = {
+        name: "New Name",
+      } as UpdateEmployeeDto;
+      const mockError = new HttpException(404, "Employee not found");
+      when(employeeRepository.findOneById).calledWith(10).mockResolvedValue(null);
+      expect(employeeService.updateEmployee(10, mockUpdateEmployeeDto));
+    });
+  });
+
+  describe("deleteEmployee", () => {
+    it("should call remove if employee exists", async () => {
+      const mockEmployee = { id: 1 } as Employee;
+      when(employeeRepository.findOneById)
+        .calledWith(1)
+        .mockReturnValue(mockEmployee);
+
+      await employeeService.deleteEmployee(1);
+
+      expect(employeeRepository.remove).toHaveBeenCalledWith(mockEmployee);
+    });
+    it("should not call remove if employee does not exist", async () => {
+      when(employeeRepository.findOneById).calledWith(99).mockResolvedValue(null);
+
+      await employeeService.deleteEmployee(99);
+
+      expect(employeeRepository.remove).not.toHaveBeenCalled();
     });
   });
 });
